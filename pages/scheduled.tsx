@@ -1,10 +1,10 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
-import styles from "../styles/Home.module.css";
 import Link from "next/link";
+import styles from "../styles/Home.module.css";
 
-const Home: NextPage = ({ data }) => {
+const Scheduled: NextPage = ({ data }) => {
   return (
     <div className={styles.container}>
       <Head>
@@ -12,12 +12,8 @@ const Home: NextPage = ({ data }) => {
         <meta name="description" content="To do list" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main style={{ display: "flex" }}>
-        <div style={{ justifyContent: "space-between" }}>
-          <Link href="/"><button>To do list</button></Link>
-          <Link href="/scheduled"><button>Schedule</button></Link>
-          <Link href="/add-new"><button>Add new</button></Link>
-        </div>
+      <main>
+        <Link href="/">To do list</Link>
         <div style={{ display: "flex", flexDirection: "column" }}>
           {data.map((todo, index) => (
             <Link href={`/todo/${todo.id}`} key={index}>
@@ -40,7 +36,15 @@ export async function getServerSideProps() {
   const data = await res.json();
 
   // Pass data to the page via props
-  return { props: { data } };
+  return {
+    props: {
+      data: data.sort(function (a, b) {
+        // Turn your strings into dates, and then subtract them
+        // to get a value that is either negative, positive, or zero.
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      }),
+    },
+  };
 }
 
-export default Home;
+export default Scheduled;
